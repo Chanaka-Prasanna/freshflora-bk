@@ -3,6 +3,7 @@ from app.models.order import OrderCreate, OrderResponse, OrderInDB
 from app.api.deps import get_current_user
 from app.db.mongodb import db_client
 from typing import List, Any
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -23,6 +24,17 @@ async def create_order(
     )
     
     result = await db_client.db["orders"].insert_one(order_data.model_dump(by_alias=True, exclude={"id"}))
+    
+    # Increment orders count for each product in the order
+    for item in order_in.items:
+        try:
+            await db_client.db["products"].update_one(
+                {"_id": ObjectId(item.product_id)},
+                {"$inc": {"orders": item.quantity}}
+            )
+        except Exception as e:
+            # If product not found or invalid ObjectId, ignore
+            pass
     
     # Return the created order
     created_order = await db_client.db["orders"].find_one({"_id": result.inserted_id})

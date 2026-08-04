@@ -14,7 +14,8 @@ async def get_products_common(
     sort_order: str = "asc",
     category: Optional[str] = None,
     is_hot: Optional[bool] = None,
-    max_price: Optional[float] = None
+    max_price: Optional[float] = None,
+    availability: Optional[str] = None
 ):
     query = {}
     
@@ -32,6 +33,15 @@ async def get_products_common(
         
     if max_price is not None:
         query["price"] = {"$lte": max_price}
+        
+    if availability and availability != "All":
+        if availability == "In Stock":
+            query["stock"] = {"$gt": 0}
+            query["availability"] = "In Stock"
+        elif availability == "Out of Stock":
+            query["stock"] = 0
+        else:
+            query["availability"] = availability
 
     sort_criteria = []
     if sort_by:
@@ -79,6 +89,18 @@ async def get_hot_products(
     search: Optional[str] = None,
     sort_by: Optional[str] = None,
     sort_order: str = Query("asc", pattern="^(asc|desc)$"),
-    category: Optional[str] = None
-) -> Any:
-    return await get_products_common(page, size, search, sort_by, sort_order, category, is_hot=True)
+    category: Optional[str] = Query(None, description="Filter by category"),
+    max_price: Optional[float] = Query(None, description="Filter by max price"),
+    availability: Optional[str] = Query(None, description="Filter by availability status")
+):
+    return await get_products_common(
+        page=page,
+        size=size,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        category=category,
+        max_price=max_price,
+        availability=availability,
+        is_hot=True
+    )

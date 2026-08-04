@@ -10,6 +10,8 @@ class ProductBase(BaseModel):
     category: str
     is_hot: bool = False
     stock: int = 10
+    orders: int = 0
+    availability: str = "In Stock"
 
 class ProductCreate(ProductBase):
     pass
