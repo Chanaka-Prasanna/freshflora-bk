@@ -14,10 +14,12 @@ async def create_order(
     # In a real application, you would verify product prices and handle payment processing here.
     # We will just mark it as paid for this mock implementation.
     
+    order_dict = order_in.model_dump()
+    order_dict["status"] = "paid"
+    
     order_data = OrderInDB(
-        **order_in.model_dump(),
-        user_id=str(current_user["_id"]),
-        status="paid"
+        **order_dict,
+        user_id=str(current_user["_id"])
     )
     
     result = await db_client.db["orders"].insert_one(order_data.model_dump(by_alias=True, exclude={"id"}))

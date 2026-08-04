@@ -13,7 +13,8 @@ async def get_products_common(
     sort_by: Optional[str] = None,
     sort_order: str = "asc",
     category: Optional[str] = None,
-    is_hot: Optional[bool] = None
+    is_hot: Optional[bool] = None,
+    max_price: Optional[float] = None
 ):
     query = {}
     
@@ -28,6 +29,9 @@ async def get_products_common(
         
     if is_hot is not None:
         query["is_hot"] = is_hot
+        
+    if max_price is not None:
+        query["price"] = {"$lte": max_price}
 
     sort_criteria = []
     if sort_by:
