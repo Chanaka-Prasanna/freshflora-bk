@@ -63,7 +63,7 @@ async def get_products(
     size: int = Query(10, ge=1, le=100),
     search: Optional[str] = None,
     sort_by: Optional[str] = None,
-    sort_order: str = Query("asc", regex="^(asc|desc)$"),
+    sort_order: str = Query("asc", pattern="^(asc|desc)$"),
     category: Optional[str] = None
 ) -> Any:
     return await get_products_common(page, size, search, sort_by, sort_order, category)
@@ -74,7 +74,7 @@ async def get_hot_products(
     size: int = Query(10, ge=1, le=100),
     search: Optional[str] = None,
     sort_by: Optional[str] = None,
-    sort_order: str = Query("asc", regex="^(asc|desc)$"),
+    sort_order: str = Query("asc", pattern="^(asc|desc)$"),
     category: Optional[str] = None
 ) -> Any:
     return await get_products_common(page, size, search, sort_by, sort_order, category, is_hot=True)
