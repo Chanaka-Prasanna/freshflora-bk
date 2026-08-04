@@ -31,7 +31,7 @@ async def get_products_common(
     if is_hot is not None:
         query["is_hot"] = is_hot
         
-    if max_price is not None:
+    if max_price is not None and max_price > 0:
         query["price"] = {"$lte": max_price}
         
     if availability and availability != "All":
@@ -78,9 +78,20 @@ async def get_products(
     search: Optional[str] = None,
     sort_by: Optional[str] = None,
     sort_order: str = Query("asc", pattern="^(asc|desc)$"),
-    category: Optional[str] = None
+    category: Optional[str] = None,
+    max_price: Optional[float] = Query(None),
+    availability: Optional[str] = Query(None)
 ) -> Any:
-    return await get_products_common(page, size, search, sort_by, sort_order, category)
+    return await get_products_common(
+        page=page,
+        size=size,
+        search=search,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        category=category,
+        max_price=max_price,
+        availability=availability
+    )
 
 @router.get("/hot", response_model=PaginatedProductsResponse)
 async def get_hot_products(
